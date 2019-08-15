@@ -6,6 +6,7 @@ use App\Application\Actions\User\ListUsersAction;
 use App\Application\Actions\User\ViewUserAction;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
+use App\Application\Actions\Todo\ListTodosAction;
 
 return function (App $app) {
     $container = $app->getContainer();
@@ -16,8 +17,6 @@ return function (App $app) {
     });
 
     $app->group('/api/v1', function (Group $group) use ($container) {
-        $group->get('', function () {
-            echo "Hello World!";
-        });
+        $group->get('', ListTodosAction::class);
     });
 };
