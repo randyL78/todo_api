@@ -9,8 +9,8 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 // Actions for todos
 use App\Application\Actions\Todo\CreateTaskAction;
 use App\Application\Actions\Todo\DeleteTaskAction;
-use App\Application\Actions\Todo\GetTaskAction;
-use App\Application\Actions\Todo\ListTodosAction;
+use App\Application\Actions\Todo\TaskAction;
+use App\Application\Actions\Todo\ListTasksAction;
 use App\Application\Actions\Todo\UpdateTaskAction;
 use App\Application\Actions\Todo\DisplayEndpointsAction;
 
@@ -25,13 +25,13 @@ return function (App $app) {
     $app->group('/api/v1/todos', function (Group $group) use ($container) {
 
         // get all task
-        $group->get('', ListTodosAction::class);
+        $group->get('', ListTasksAction::class);
 
         // create a task
         $group->post('', CreateTaskAction::class);
 
         // get a specific task
-        $group->get('/{id}', GetTaskAction::class);
+        $group->get('/{id}', TaskAction::class);
 
         // update a task
         $group->put('/{id}', UpdateTaskAction::class);

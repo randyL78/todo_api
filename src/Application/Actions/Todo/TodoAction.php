@@ -3,22 +3,22 @@
 namespace App\Application\Actions\Todo;
 
 use App\Application\Actions\Action;
-// TODO sub in the following with the DB Model
-// use App\Domain\User\UserRepository;
+use App\Domain\Todos\TaskRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
 abstract class TodoAction extends Action
 {
     /**
-     * @var \PDO
+     * @var TaskRepositoryInterface
      */
-    protected $todoData;
+    protected $taskRepository;
 
     /**
      * @param LoggerInterface $logger
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, TaskRepositoryInterface $taskRepository)
     {
         parent::__construct($logger);
+        $this->taskRepository = $taskRepository;
     }
 }

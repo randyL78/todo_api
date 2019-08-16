@@ -8,7 +8,7 @@ use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use \App\Domain\Api;
+use App\Domain\Api;
 use App\Domain\ApiInterface;
 
 return function (ContainerBuilder $containerBuilder) {

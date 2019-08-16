@@ -1,12 +1,26 @@
 <?php
 
+/**
+ * Defines functions for retrieving API settings
+ * @author Randy D. Layne <randydavidl78@gmail.com>
+ */
+
 namespace App\Domain;
 
 interface ApiInterface
 {
-    public function getBaseUrl();
+    /**
+     * @return string The url of the base route
+     */
+    public function getBaseUrl(): string;
 
-    public function getVersion();
+    /**
+     * @return string The Api's version number
+     */
+    public function getVersion(): string;
 
-    public function getApiUrl();
+    /**
+     * @return string The url of the current api version's main route
+     */
+    public function getApiUrl(): string;
 }
