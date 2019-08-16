@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use DI\ContainerBuilder;
@@ -7,6 +8,8 @@ use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use \App\Domain\Api;
+use App\Domain\ApiInterface;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -24,5 +27,13 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $logger;
         },
+
+        // Add the API settings
+        ApiInterface::class => DI\factory(function (ContainerInterface $c) {
+            $settings = $c->get('settings');
+
+            $api = $settings['api'];
+            return new Api($api);
+        })
     ]);
 };

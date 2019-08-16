@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Application\Actions\Todo\DisplayEndpointsAction;
 use App\Application\Actions\User\ListUsersAction;
 use App\Application\Actions\User\ViewUserAction;
 use Slim\App;
@@ -16,7 +17,16 @@ return function (App $app) {
         $group->get('/{id}', ViewUserAction::class);
     });
 
+    // display the possible endpoints
+    $app->get('/', DisplayEndpointsAction::class);
+
     $app->group('/api/v1', function (Group $group) use ($container) {
-        $group->get('', ListTodosAction::class);
+
+        // route group for todos endpoints
+        $group->group('/todos', function (Group $group) use ($container) {
+
+            // get all todos
+            $group->get('', ListTodosAction::class);
+        });
     });
 };
