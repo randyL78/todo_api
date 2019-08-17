@@ -9,12 +9,16 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Tasks;
 
+use App\Domain\Exceptions\TaskCreateFailedException;
+use App\Domain\Exceptions\TaskDeleteFailedException;
 use PDO;
 
 
 use App\Domain\Todos\Task;
 use App\Domain\Todos\TaskRepositoryInterface;
-use Exception;
+use App\Domain\Exceptions\TaskNotFoundException;
+use App\Domain\Exceptions\TaskUpdateFailedException;
+use App\Domain\Exceptions\TaskValidationException;
 
 class TaskRepository implements TaskRepositoryInterface
 {
@@ -45,7 +49,9 @@ class TaskRepository implements TaskRepositoryInterface
         $tasksList = $statement->fetchAll();
         $tasks = [];
 
-        // TODO throw a not found exception
+        if (empty($tasksList)) {
+            throw new TaskNotFoundException();
+        }
 
         // convert assoc array of task data and convert 
         // to array of Task objects
@@ -66,7 +72,7 @@ class TaskRepository implements TaskRepositoryInterface
     public function findTaskOfId(int $id): Task
     {
         if (empty($id)) {
-            // TODO throw info required exception
+            throw new TaskValidationException();
         }
 
         $statement = $this->database->prepare(
@@ -78,8 +84,7 @@ class TaskRepository implements TaskRepositoryInterface
         $task = $statement->fetch();
 
         if (empty($task)) {
-            // TODO throw task not found exception
-            throw new Exception('Task not found');
+            throw new TaskNotFoundException();
         }
 
         return new Task(
@@ -93,24 +98,72 @@ class TaskRepository implements TaskRepositoryInterface
      * Create a new task
      * @inheritDoc
      */
-    public function createTask(Task $task): bool
+    public function createTask(Task $task): Task
     {
-        return true;
+        $statement = $this->database->prepare(
+            'INSERT INTO tasks (task, status) VALUES (:task, :status)'
+        );
+
+        $text = $task->getTask();
+        $status = $task->getStatus();
+
+        $statement->bindParam('task', $text, PDO::PARAM_STR);
+        $statement->bindParam('status', $status, PDO::PARAM_INT);
+        $statement->execute();
+
+        if ($statement->rowCount() > 0) {
+            return $this->findTaskOfId((int) $this->database->lastInsertId());
+        } else {
+            throw new TaskCreateFailedException();
+        }
     }
 
     /**
      * @inheritDoc
      */
-    public function deleteTask(int $id): bool
+    public function deleteTask(int $id): array
     {
-        return true;
+
+        if (empty($id)) {
+            throw TaskValidationException();
+        }
+
+        $statement = $this->database->prepare(
+            'DELETE FROM tasks WHERE id=:id'
+        );
+
+        $statement->bindParam('id', $id, PDO::PARAM_INT);
+        $statement->execute();
+
+        if ($statement->rowCount() > 0) {
+            return ['message' => 'Task ' . $id . ' was deleted.'];
+        } else {
+            throw new TaskDeleteFailedException();
+        }
     }
 
     /**
      * @inheritDoc
      */
-    public function updateTask(Task $task): bool
+    public function updateTask(Task $task): Task
     {
-        return true;
+        $statement = $this->database->prepare(
+            'UPDATE tasks SET task=:task, status=:status WHERE id=:id'
+        );
+
+        $id = $task->getId();
+        $text = $task->getTask();
+        $status = $task->getStatus();
+
+        $statement->bindParam('id', $id, PDO::PARAM_INT);
+        $statement->bindParam('task', $text, PDO::PARAM_STR);
+        $statement->bindParam('status', $status, PDO::PARAM_INT);
+        $statement->execute();
+
+        if ($statement->rowCount() > 0) {
+            return $this->findTaskOfId($id);
+        } else {
+            throw new TaskUpdateFailedException();
+        }
     }
 }

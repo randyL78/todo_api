@@ -8,6 +8,8 @@ class ListTasksAction extends TodoAction
 {
     protected function action(): Response
     {
+        $this->logger->info('Find all tasks route has been viewed');
+
         $todos = $this->taskRepository->findAll();
 
         return $this->respondWithData($todos);

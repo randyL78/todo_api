@@ -22,7 +22,7 @@ class Task implements JsonSerializable
     /**
      * @var string
      */
-    private $text;
+    private $task;
 
     /**
      * @var int|null
@@ -31,13 +31,13 @@ class Task implements JsonSerializable
 
     /**
      * @param integer|null $id
-     * @param string $text
+     * @param string $task
      * @param integer|null $status
      */
-    public function __construct(?int $id, string $text, ?int $status)
+    public function __construct(?int $id, string $task, ?int $status)
     {
         $this->id = $id;
-        $this->text = $text;
+        $this->task = $task;
         $this->status = $status;
     }
 
@@ -52,9 +52,9 @@ class Task implements JsonSerializable
     /**
      * @return string
      */
-    public function getText(): string
+    public function getTask(): string
     {
-        return $this->text;
+        return $this->task;
     }
 
     /**
@@ -72,7 +72,7 @@ class Task implements JsonSerializable
     {
         return [
             'id' => $this->id,
-            'text' => $this->text,
+            'task' => $this->task,
             'status' => $this->status
         ];
     }

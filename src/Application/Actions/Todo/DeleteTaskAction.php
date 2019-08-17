@@ -9,14 +9,13 @@ class DeleteTaskAction extends TodoAction
 {
     protected function action(): Response
     {
-        // TODO: Replace with Todos Model Methods
-        $todo = [
-            'message' => 'Task ' . $this->args['id'] . ' deleted'
-        ];
+        $this->logger->info('Task delete route has been viewed');
 
-        $this->logger->info('Task ' . $this->args['id'] . 'has been deleted');
+        $todo = $this->taskRepository->deleteTask($this->args['id']);
 
-        $payload = new ActionPayload(201, $todo);
-        return $this->respond($payload)->withStatus(201);
+        $this->logger->info('Task ' . $this->args['id'] . ' has been deleted');
+
+        $payload = new ActionPayload(200, $todo);
+        return $this->respond($payload)->withStatus(200);
     }
 }

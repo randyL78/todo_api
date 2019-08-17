@@ -1,12 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Application\Actions;
 
-use App\Domain\DomainException\DomainRecordNotFoundException;
+// throwable classes from model
+use App\Domain\Exceptions\DomainRecordNotFoundException;
+use App\Domain\Exceptions\DomainValidationFailedException;
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
+
+// return throws to caller/handler
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 
@@ -57,7 +63,11 @@ abstract class Action
         try {
             return $this->action();
         } catch (DomainRecordNotFoundException $e) {
+            $this->logger->info($e->getMessage());
             throw new HttpNotFoundException($this->request, $e->getMessage());
+        } catch (DomainValidationFailedException $e) {
+            $this->logger->info($e->getMessage());
+            throw new HttpBadRequestException($this->request, $e->getMessage());
         }
     }
 
